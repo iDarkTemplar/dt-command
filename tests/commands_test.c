@@ -20,10 +20,10 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <dtmd-misc.h>
+#include <dt-command.h>
 #include "tests/dt_tests.h"
 
-void print_command(dtmd_command_t *cmd)
+void print_command(dt_command_t *cmd)
 {
 	size_t i;
 
@@ -42,12 +42,12 @@ void print_command(dtmd_command_t *cmd)
 	}
 }
 
-void print_and_free(dtmd_command_t *cmd)
+void print_and_free(dt_command_t *cmd)
 {
 	if (cmd != NULL)
 	{
 		print_command(cmd);
-		dtmd_free_command(cmd);
+		dt_free_command(cmd);
 	}
 }
 
@@ -65,34 +65,34 @@ int main(int argc, char **argv)
 	char *cmd10 = "cmd10(nil \"arg3\")\n";
 	char *cmd11 = "(\"arg1\")\n";
 
-	dtmd_command_t *cmd1_res;
-	dtmd_command_t *cmd2_res;
-	dtmd_command_t *cmd3_res;
-	dtmd_command_t *cmd4_res;
-	dtmd_command_t *cmd5_res;
-	dtmd_command_t *cmd6_res;
-	dtmd_command_t *cmd7_res;
-	dtmd_command_t *cmd8_res;
-	dtmd_command_t *cmd9_res;
-	dtmd_command_t *cmd10_res;
-	dtmd_command_t *cmd11_res;
+	dt_command_t *cmd1_res;
+	dt_command_t *cmd2_res;
+	dt_command_t *cmd3_res;
+	dt_command_t *cmd4_res;
+	dt_command_t *cmd5_res;
+	dt_command_t *cmd6_res;
+	dt_command_t *cmd7_res;
+	dt_command_t *cmd8_res;
+	dt_command_t *cmd9_res;
+	dt_command_t *cmd10_res;
+	dt_command_t *cmd11_res;
 
 	tests_init();
 
 	(void)argc;
 	(void)argv;
 
-	test_compare((cmd1_res = dtmd_parse_command(cmd1)) != NULL);
-	test_compare((cmd2_res = dtmd_parse_command(cmd2)) != NULL);
-	test_compare((cmd3_res = dtmd_parse_command(cmd3)) == NULL);
-	test_compare((cmd4_res = dtmd_parse_command(cmd4)) == NULL);
-	test_compare((cmd5_res = dtmd_parse_command(cmd5)) != NULL);
-	test_compare((cmd6_res = dtmd_parse_command(cmd6)) != NULL);
-	test_compare((cmd7_res = dtmd_parse_command(cmd7)) != NULL);
-	test_compare((cmd8_res = dtmd_parse_command(cmd8)) != NULL);
-	test_compare((cmd9_res = dtmd_parse_command(cmd9)) != NULL);
-	test_compare((cmd10_res = dtmd_parse_command(cmd10)) == NULL);
-	test_compare((cmd11_res = dtmd_parse_command(cmd11)) == NULL);
+	test_compare((cmd1_res = dt_parse_command(cmd1)) != NULL);
+	test_compare((cmd2_res = dt_parse_command(cmd2)) != NULL);
+	test_compare((cmd3_res = dt_parse_command(cmd3)) == NULL);
+	test_compare((cmd4_res = dt_parse_command(cmd4)) == NULL);
+	test_compare((cmd5_res = dt_parse_command(cmd5)) != NULL);
+	test_compare((cmd6_res = dt_parse_command(cmd6)) != NULL);
+	test_compare((cmd7_res = dt_parse_command(cmd7)) != NULL);
+	test_compare((cmd8_res = dt_parse_command(cmd8)) != NULL);
+	test_compare((cmd9_res = dt_parse_command(cmd9)) != NULL);
+	test_compare((cmd10_res = dt_parse_command(cmd10)) == NULL);
+	test_compare((cmd11_res = dt_parse_command(cmd11)) == NULL);
 
 	print_and_free(cmd1_res);
 	print_and_free(cmd2_res);

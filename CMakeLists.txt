@@ -71,6 +71,8 @@ if (NOT DEFINED DISABLE_LIBVERSION)
 endif (NOT DEFINED DISABLE_LIBVERSION)
 target_link_libraries( dt-command )
 
+ENABLE_TESTING()
+
 set (TEST_SOURCES_commands tests/commands_test.c tests/dt_tests.h )
 set (TEST_LIBS_commands dt-command )
 
