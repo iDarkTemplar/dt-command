@@ -4,7 +4,7 @@ cmake_minimum_required( VERSION 3.0)
 
 set(DT_CMD_VERSION_MAJOR 1)
 set(DT_CMD_VERSION_MINOR 0)
-set(DT_CMD_VERSION_PATCH 0)
+set(DT_CMD_VERSION_PATCH 1)
 set(DT_CMD_VERSION "${DT_CMD_VERSION_MAJOR}.${DT_CMD_VERSION_MINOR}.${DT_CMD_VERSION_PATCH}")
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${DT_CMD_VERSION_MAJOR})
@@ -19,26 +19,17 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${DT_CMD_VERSION}")
 include(CPack)
 
 # installation directory configuration
-set(INST_PREFIX "/usr" CACHE PATH "Prefix prepended to install directories")
-set(HEADERS_PREFIX "${INST_PREFIX}/include" CACHE PATH "Prefix prepended to headers install directories")
-set(CMAKE_INSTALL_PREFIX "${INST_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
+set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)")
+set(EXEC_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Installation prefix for executables and object code libraries" FORCE)
+set(BIN_INSTALL_DIR ${EXEC_INSTALL_PREFIX}/bin CACHE PATH "Installation prefix for user executables" FORCE)
+set(SBIN_INSTALL_DIR ${EXEC_INSTALL_PREFIX}/sbin CACHE PATH "Installation prefix for user executables" FORCE)
+set(LIB_INSTALL_DIR ${EXEC_INSTALL_PREFIX}/lib${LIB_SUFFIX} CACHE PATH  "Installation prefix for object code libraries" FORCE)
+set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include CACHE PATH "Installation prefix for C header files" FORCE)
+set(DATA_PREFIX "${CMAKE_INSTALL_PREFIX}/share" CACHE PATH "Prefix prepended to data install directories" FORCE)
 
-message(STATUS "To change installation directory use -DINST_PREFIX=path, for example, -DINST_PREFIX=/usr")
-message(STATUS "To change data installation directory use -DDATA_PREFIX=path")
-message(STATUS "To change library installation path use -DINSTALL_DIR_LIB=path")
+option(ENABLE_LIBVERSION "enable libraries versioning" ON)
 
 message(STATUS "System: ${CMAKE_SYSTEM_NAME}" )
-if (NOT DEFINED INSTALL_DIR_LIB)
-	if (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-		message(STATUS "OS: 64 bit")
-		set (INSTALL_DIR_LIB "lib64")
-	else (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-		message(STATUS "OS: 32 bit")
-		set (INSTALL_DIR_LIB "lib32")
-	endif (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-endif (NOT DEFINED INSTALL_DIR_LIB)
-
-message(STATUS "set DISABLE_LIBVERSION to disable libraries versioning")
 
 # don't USE -O3 with GCC, it causes less precise calculations
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -66,9 +57,9 @@ set ( DT_CMD_LIBRARY_SOURCES dt-command.c )
 set ( DT_CMD_LIBRARY_HEADERS dt-command.h )
 
 add_library( dt-command SHARED ${DT_CMD_LIBRARY_SOURCES} ${DT_CMD_LIBRARY_HEADERS} )
-if (NOT DEFINED DISABLE_LIBVERSION)
+if (ENABLE_LIBVERSION)
 	set_target_properties( dt-command PROPERTIES VERSION ${DT_CMD_VERSION} SOVERSION ${DT_CMD_VERSION_MAJOR} )
-endif (NOT DEFINED DISABLE_LIBVERSION)
+endif (ENABLE_LIBVERSION)
 target_link_libraries( dt-command )
 
 ENABLE_TESTING()
@@ -85,6 +76,6 @@ foreach (CURRENT_TEST ${ALL_TESTS})
 endforeach (CURRENT_TEST)
 
 # installation config
-install(TARGETS dt-command LIBRARY DESTINATION ${INSTALL_DIR_LIB} )
-install(FILES "dt-command.h"              DESTINATION "${HEADERS_PREFIX}")
+install(TARGETS dt-command LIBRARY DESTINATION ${LIB_INSTALL_DIR} )
+install(FILES "dt-command.h"              DESTINATION "${INCLUDE_INSTALL_DIR}")
 install(FILES "cmake/FindDtCommand.cmake" DESTINATION "${CMAKE_ROOT}/Modules" )
