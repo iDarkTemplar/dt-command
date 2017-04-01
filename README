@@ -1,0 +1,22 @@
+dt-command is a simple library for parsing text commands of simple format.
+
+It allows to parse commands in following format:
+
+command(arg0, arg1, arg2, ..., argn)\n
+
+where argX is either a string in double quotes like "example" or a special value nil which means no value.
+Arguments are separated by comma and space.
+Argument count is variable and may be zero.
+Command must have a command name, opening and closing argument brackets and end with newline symbol
+Examples of valid commands:
+
+cmd("value1", nil, "value2")\n
+cmd2()\n
+cmd3(nil)\n
+cmd4("value1", "one_more_value")\n
+
+Functions dt_validate_command and dt_parse_command require buffer to contain newline character, i.e. to have one full command in the buffer,
+otherwise it'll cause undefined behaviour.
+
+The returned structure contains command name, arguments count and array of arguments, where argument may be a NULL pointer if nil was passed,
+or a pointer to string otherwise

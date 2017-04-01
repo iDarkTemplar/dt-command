@@ -34,6 +34,7 @@ typedef struct dt_command
 	char **args;
 } dt_command_t;
 
+/* NOTE: functions dt_validate_command and dt_parse_command require to have at least one full command in buffer. */
 int dt_validate_command(const char *buffer);
 dt_command_t* dt_parse_command(const char *buffer);
 void dt_free_command(dt_command_t *cmd);
