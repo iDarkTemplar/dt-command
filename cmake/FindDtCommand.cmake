@@ -1,20 +1,20 @@
 # - Try to find DtCommand library
 # Once done this will define
-#  DT_CMD_FOUND - System has DtCommand
-#  DT_CMD_INCLUDE_DIRS - The DtCommand include directories
-#  DT_CMD_LIBRARIES - The libraries needed to use DtCommand
+#  DTCOMMAND_FOUND - System has DtCommand
+#  DTCOMMAND_INCLUDE_DIRS - The DtCommand include directories
+#  DTCOMMAND_LIBRARIES - The libraries needed to use DtCommand
 
-find_path(DT_CMD_INCLUDE_DIR dt-command.h )
+find_path(DTCOMMAND_INCLUDE_DIR dt-command.h)
 
-find_library(DT_CMD_LIBRARY NAMES dt-command libdt-command )
+find_library(DTCOMMAND_LIBRARY NAMES dt-command libdt-command)
 
-set(DT_CMD_LIBRARIES ${DT_CMD_LIBRARY} )
-set(DT_CMD_INCLUDE_DIRS ${DT_CMD_INCLUDE_DIR} )
+set(DTCOMMAND_LIBRARIES ${DTCOMMAND_LIBRARY})
+set(DTCOMMAND_INCLUDE_DIRS ${DTCOMMAND_INCLUDE_DIR})
 
 include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set DT_CMD_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set DTCOMMAND_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(DtCommand  DEFAULT_MSG
-                                  DT_CMD_LIBRARY DT_CMD_INCLUDE_DIR)
+find_package_handle_standard_args(DtCommand DEFAULT_MSG
+                                  DTCOMMAND_LIBRARY DTCOMMAND_INCLUDE_DIR)
 
-mark_as_advanced(DT_CMD_INCLUDE_DIR DT_CMD_LIBRARY )
+mark_as_advanced(DTCOMMAND_INCLUDE_DIR DTCOMMAND_LIBRARY)
