@@ -1,0 +1,8 @@
+set(DtCommand_VERSION @PROJECT_VERSION@)
+
+@PACKAGE_INIT@
+
+include ("${CMAKE_CURRENT_LIST_DIR}/DtCommandTargets.cmake")
+
+set_and_check(DtCommand_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set(DtCommand_LIBRARIES "@EXPORT_TARGETS@")

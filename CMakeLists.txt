@@ -4,6 +4,8 @@ project(dt-command
 	VERSION 2.0.0
 	LANGUAGES C)
 
+include(CMakePackageConfigHelpers)
+
 # installation directory configuration
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)")
 set(EXEC_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Installation prefix for executables and object code libraries" FORCE)
@@ -12,6 +14,7 @@ set(SBIN_INSTALL_DIR ${EXEC_INSTALL_PREFIX}/sbin CACHE PATH "Installation prefix
 set(LIB_INSTALL_DIR ${EXEC_INSTALL_PREFIX}/lib${LIB_SUFFIX} CACHE PATH  "Installation prefix for object code libraries" FORCE)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include CACHE PATH "Installation prefix for C header files" FORCE)
 set(DATA_PREFIX "${CMAKE_INSTALL_PREFIX}/share" CACHE PATH "Prefix prepended to data install directories" FORCE)
+set(CMAKEPACKAGE_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/DtCommand" CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where ${PROJECT_NAME}Config.cmake is installed")
 
 option(ENABLE_LIBVERSION "enable libraries versioning" ON)
 
@@ -55,6 +58,21 @@ foreach (CURRENT_TEST ${ALL_TESTS})
 endforeach (CURRENT_TEST)
 
 # installation config
-install(TARGETS dt-command LIBRARY DESTINATION ${LIB_INSTALL_DIR} )
-install(FILES "dt-command.h"              DESTINATION "${INCLUDE_INSTALL_DIR}")
-install(FILES "cmake/FindDtCommand.cmake" DESTINATION "${CMAKE_ROOT}/Modules" )
+install(TARGETS dt-command EXPORT DtCommandTargets LIBRARY DESTINATION ${LIB_INSTALL_DIR})
+install(FILES "dt-command.h" DESTINATION "${INCLUDE_INSTALL_DIR}")
+install(EXPORT DtCommandTargets DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
+set(EXPORT_TARGETS dt-command CACHE INTERNAL "export targets")
+
+configure_package_config_file(cmake/DtCommandConfig.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/DtCommandConfig.cmake
+	INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
+	PATH_VARS INCLUDE_INSTALL_DIR)
+
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/DtCommandConfigVersion.cmake
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/DtCommandConfig.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/DtCommandConfigVersion.cmake
+	DESTINATION ${CMAKEPACKAGE_INSTALL_DIR} )
