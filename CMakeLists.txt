@@ -1,22 +1,8 @@
-project(dt-command)
+cmake_minimum_required( VERSION 3.16.0 )
 
-cmake_minimum_required( VERSION 3.0)
-
-set(DT_CMD_VERSION_MAJOR 1)
-set(DT_CMD_VERSION_MINOR 0)
-set(DT_CMD_VERSION_PATCH 2)
-set(DT_CMD_VERSION "${DT_CMD_VERSION_MAJOR}.${DT_CMD_VERSION_MINOR}.${DT_CMD_VERSION_PATCH}")
-
-set(CPACK_PACKAGE_VERSION_MAJOR ${DT_CMD_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${DT_CMD_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${DT_CMD_VERSION_PATCH})
-set(CPACK_GENERATOR "TBZ2")
-set(CPACK_SOURCE_GENERATOR "TBZ2")
-set(CPACK_SOURCE_IGNORE_FILES
-	".git;build;CMakeLists.txt.user;CMakeLists.txt.user.*;ignore;TODO;cppcheck-linux.sh")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${DT_CMD_VERSION}")
-# MUST be after CPACK_* variables.
-include(CPack)
+project(dt-command
+	VERSION 2.0.0
+	LANGUAGES C)
 
 # installation directory configuration
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)")
@@ -34,22 +20,15 @@ message(STATUS "System: ${CMAKE_SYSTEM_NAME}" )
 # don't USE -O3 with GCC, it causes less precise calculations
 if (CMAKE_COMPILER_IS_GNUCC)
 	set (CMAKE_C_FLAGS_RELEASE "-O2 -pipe -march=native -Wall -Wextra -Wno-unused-result -DNDEBUG")
-	set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
-
 	set (CMAKE_C_FLAGS_DEBUG "-O0 -pipe -march=native -Wall -Wextra -Wno-unused-result -g -ggdb")
-	set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 # clang compiler options
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set (CLANG_WARNINGS "-Weverything -Wno-missing-prototypes -Wno-padded -Wno-sign-conversion -Wno-conversion -Wno-disabled-macro-expansion -Wno-cast-align" )
-
 	set (CMAKE_C_FLAGS_RELEASE "-O3 -pipe ${CLANG_WARNINGS} -DNDEBUG")
-	set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
-
 	set (CMAKE_C_FLAGS_DEBUG "-O0 -pipe ${CLANG_WARNINGS} -g -ggdb")
-	set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
@@ -58,7 +37,7 @@ set ( DT_CMD_LIBRARY_HEADERS dt-command.h )
 
 add_library( dt-command SHARED ${DT_CMD_LIBRARY_SOURCES} ${DT_CMD_LIBRARY_HEADERS} )
 if (ENABLE_LIBVERSION)
-	set_target_properties( dt-command PROPERTIES VERSION ${DT_CMD_VERSION} SOVERSION ${DT_CMD_VERSION_MAJOR} )
+	set_target_properties( dt-command PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR} )
 endif (ENABLE_LIBVERSION)
 target_link_libraries( dt-command )
 

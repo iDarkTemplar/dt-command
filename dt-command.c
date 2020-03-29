@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 i.Dark_Templar <darktemplar@dark-templar-archives.net>
+ * Copyright (C) 2016-2020 i.Dark_Templar <darktemplar@dark-templar-archives.net>
  *
  * This file is part of DT Command.
  *
@@ -23,11 +23,13 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 
 int dt_validate_command(const char *buffer)
 {
 	const char *cur;
 	int i;
+	int field_len;
 
 	if (buffer == NULL)
 	{
@@ -64,30 +66,41 @@ int dt_validate_command(const char *buffer)
 
 	for (;;)
 	{
-		if ((*cur) == '\"')
+		if (isdigit(*cur))
 		{
-			++cur;
+			field_len = 0;
 
-			for (;;)
+			for ( ; isdigit(*cur); ++cur)
 			{
-				if (((*cur) == '\n') || ((*cur) == 0))
+				if (field_len >= (INT_MAX / 10))
 				{
 					return 0;
 				}
 
-				if ((*cur) == '\"')
+				field_len = (field_len * 10) + ((*cur) - '0');
+			}
+
+			if (field_len != 0)
+			{
+				if ((*cur) != ' ')
 				{
-					break;
+					return 0;
 				}
 
 				++cur;
-			}
 
-			++cur;
+				for (i = 0; i < field_len; ++i, ++cur)
+				{
+					if (*cur == 0)
+					{
+						return 0;
+					}
+				}
+			}
 		}
-		else if (((*cur) == 'n') && ((*(cur+1)) == 'i') && ((*(cur+2)) == 'l'))
+		else if (((*cur) == '-') && ((*(cur+1)) == '1'))
 		{
-			cur += 3;
+			cur += 2;
 		}
 		else
 		{
@@ -115,7 +128,8 @@ dt_command_t* dt_parse_command(const char *buffer)
 	const char *cur;
 	const char *start;
 	dt_command_t *result;
-	size_t i;
+	int i;
+	int field_len;
 	char *tmp_str;
 	char **tmp;
 
@@ -173,30 +187,42 @@ dt_command_t* dt_parse_command(const char *buffer)
 
 	for (;;)
 	{
-		if ((*cur) == '\"')
+		if (isdigit(*cur))
 		{
-			++cur;
+			field_len = 0;
 
-			start = cur;
-			i     = 0;
-
-			for (;;)
+			for ( ; isdigit(*cur); ++cur)
 			{
-				if (((*cur) == '\n') || ((*cur) == 0))
+				if (field_len >= (INT_MAX / 10))
 				{
 					goto parse_command_error_2;
 				}
 
-				if ((*cur) == '\"')
-				{
-					break;
-				}
-
-				++i;
-				++cur;
+				field_len = (field_len * 10) + ((*cur) - '0');
 			}
 
-			tmp_str = (char*) malloc((i+1)*sizeof(char));
+
+			if (field_len != 0)
+			{
+				if ((*cur) != ' ')
+				{
+					goto parse_command_error_2;
+				}
+
+				++cur;
+
+				start = cur;
+
+				for (i = 0; i < field_len; ++i, ++cur)
+				{
+					if (*cur == 0)
+					{
+						goto parse_command_error_2;
+					}
+				}
+			}
+
+			tmp_str = (char*) malloc((field_len+1)*sizeof(char));
 			if (tmp_str == NULL)
 			{
 				goto parse_command_error_2;
@@ -210,14 +236,17 @@ dt_command_t* dt_parse_command(const char *buffer)
 			}
 
 			result->args = tmp;
-			memcpy(tmp_str, start, i);
-			tmp_str[i] = 0;
+
+			if (field_len != 0)
+			{
+				memcpy(tmp_str, start, field_len);
+			}
+
+			tmp_str[field_len] = 0;
 			result->args[result->args_count] = tmp_str;
 			++(result->args_count);
-
-			++cur;
 		}
-		else if (((*cur) == 'n') && ((*(cur+1)) == 'i') && ((*(cur+2)) == 'l'))
+		else if (((*cur) == '-') && ((*(cur+1)) == '1'))
 		{
 			tmp = (char**) realloc(result->args, (result->args_count+1)*sizeof(char*));
 			if (tmp == NULL)
@@ -229,7 +258,7 @@ dt_command_t* dt_parse_command(const char *buffer)
 			result->args[result->args_count] = NULL;
 			++(result->args_count);
 
-			cur += 3;
+			cur += 2;
 		}
 		else
 		{
